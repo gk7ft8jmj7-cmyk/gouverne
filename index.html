@@ -376,6 +376,11 @@ html.navytop,body.navytop{background:var(--navy)}body.navytop .lmain{background:
 @media (max-width:800px){.lmain{align-items:flex-start;padding-top:24px}}
 .cdd{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:8px}.cdd:first-child{border-top:0;padding-top:0}
 .chk.lock{opacity:.5}
+.modal{overflow-x:hidden}
+[data-tpp] select{min-width:0!important;flex:1 1 140px}
+.blk{min-width:92px}.blk:hover{z-index:3}
+.modal .fgrid>*{min-width:0}.modal .fgrid{grid-template-columns:repeat(auto-fit,minmax(0,1fr))}@media (max-width:800px){.modal .fgrid{grid-template-columns:1fr}}
+[data-tpp]>span:first-child{min-width:0!important;flex:1 1 100%!important}
 </style>
 </head>
 <body>
