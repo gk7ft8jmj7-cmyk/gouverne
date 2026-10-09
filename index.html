@@ -379,7 +379,7 @@ html.navytop,body.navytop{background:var(--navy)}body.navytop .lmain{background:
 .modal{overflow-x:hidden}
 [data-tpp] select{min-width:0!important;flex:1 1 140px}
 .blk{min-width:92px}.blk:hover{z-index:3}
-.modal .fgrid>*{min-width:0}.modal .fgrid{grid-template-columns:repeat(auto-fit,minmax(0,1fr))}@media (max-width:800px){.modal .fgrid{grid-template-columns:1fr}}
+.modal .fgrid>*{min-width:0}.modal .fgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}@media (max-width:800px){.modal .fgrid{grid-template-columns:1fr}}
 [data-tpp]>span:first-child{min-width:0!important;flex:1 1 100%!important}
 </style>
 </head>
@@ -932,7 +932,7 @@ function personForm(id){
       ${own ? '<div class="field">Rôle<span style="font-weight:600;color:var(--ink);padding-top:10px">Propriétaire</span></div>' : `<label class="field">Rôle<select name="role"><option value="collab"${!m || m.role === 'collab' ? ' selected' : ''}>Collaborateur : voit ses tâches</option><option value="gerant"${m && m.role === 'gerant' ? ' selected' : ''}>Gérant : gère tout l’établissement</option></select></label>`}
       <div class="field full">Pôles<div class="chips">${A.poles.map(p => `<label class="ochip" style="min-width:0"><input type="checkbox" name="poles" value="${p.id}"${ps.includes(p.id) ? ' checked' : ''}>${esc(p.name)}</label>`).join('')}</div></div>
       ${HP() ? `<div class="field full">Rémunération<select name="payGlobal" style="margin-top:6px"><option value="">Selon le pôle (mode et taux pour chaque pôle)</option><option value="jour"${m && m.payGlobal === 'jour' ? ' selected' : ''}>À la journée, quel que soit le pôle</option><option value="fixe"${m && m.payGlobal === 'fixe' ? ' selected' : ''}>Salaire fixe par mois</option></select></div>
-      <div class="field full" data-tp><div style="display:flex;flex-direction:column;gap:8px">${A.poles.map(pp => { const cur = ((m && m.payPoles) || {})[pp.id] || {}, tx = cur.taux || (m && m.tauxPoles && m.tauxPoles[pp.id]) || ''; return `<div data-tpp="${pp.id}" style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;border:1px solid var(--line2);border-radius:12px;padding:10px 12px;font-weight:600;color:var(--ink)"><span style="display:flex;align-items:center;gap:8px;min-width:130px;flex:1"><i class="sw" style="background:${pp.color}"></i>${esc(pp.name)}</span><select name="pm_${pp.id}" style="width:auto;min-width:170px">${[['', 'Par défaut (' + TMODES.find(x => x[0] === defMode())[1] + ')']].concat(TMODES.map(x => [x[0], x[1]])).map(o => `<option value="${o[0]}"${(cur.mode || '') === o[0] ? ' selected' : ''}>${o[1]}</option>`).join('')}</select><span style="display:flex;align-items:center;gap:6px"><input type="number" name="pt_${pp.id}" min="0" step="0.01" style="width:96px;text-align:right" value="${tx}" placeholder="0,00"><span class="hint" data-u="${pp.id}">€ / h</span></span></div>`; }).join('')}</div></div>
+      <div class="field full" data-tp><div style="display:flex;flex-direction:column;gap:8px">${A.poles.map(pp => { const cur = ((m && m.payPoles) || {})[pp.id] || {}, tx = cur.taux || (m && m.tauxPoles && m.tauxPoles[pp.id]) || ''; return `<div data-tpp="${pp.id}" style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;border:1px solid var(--line2);border-radius:12px;padding:10px 12px;font-weight:600;color:var(--ink)"><span style="display:flex;align-items:center;gap:8px;min-width:130px;flex:1;flex-wrap:wrap"><i class="sw" style="background:${pp.color}"></i>${esc(pp.name)}<small class="ntp hint" style="font-weight:400">pas dans ses pôles, mais des tâches ont été faites</small></span><select name="pm_${pp.id}" style="width:auto;min-width:170px">${[['', 'Par défaut (' + TMODES.find(x => x[0] === defMode())[1] + ')']].concat(TMODES.map(x => [x[0], x[1]])).map(o => `<option value="${o[0]}"${(cur.mode || '') === o[0] ? ' selected' : ''}>${o[1]}</option>`).join('')}</select><span style="display:flex;align-items:center;gap:6px"><input type="number" name="pt_${pp.id}" min="0" step="0.01" style="width:96px;text-align:right" value="${tx}" placeholder="0,00"><span class="hint" data-u="${pp.id}">€ / h</span></span></div>`; }).join('')}</div></div>
       <label class="field" data-tj>Montant (€)<span class="hint" data-tju></span><input type="number" name="taux" min="0" step="0.01" value="${m && m.taux ? m.taux : ''}"></label>` : ''}
       ${!own ? `<div class="field full" data-perms ${m && m.role === 'gerant' ? '' : 'hidden'}>Droits du gérant<div class="chips"><label class="ochip" style="min-width:0"><input type="checkbox" name="pPaie" ${!m || !m.perms || m.perms.paie !== false ? 'checked' : ''}>Voit la paie</label><label class="ochip" style="min-width:0"><input type="checkbox" name="pReg" ${!m || !m.perms || m.perms.reglages !== false ? 'checked' : ''}>Modifie les réglages</label></div></div>` : ''}
       ${A.sites.length > 1 ? `<div class="field full">Sites<div class="chips">${A.sites.map(s => `<label class="ochip" style="min-width:0"><input type="checkbox" name="sites" value="${s.id}"${ss.includes(s.id) ? ' checked' : ''}>${esc(s.name)}</label>`).join('')}</div></div>` : ''}
@@ -944,7 +944,8 @@ function personForm(id){
     f.querySelector('[data-tp]').hidden = !!g; f.querySelector('[data-tj]').hidden = !g;
     f.querySelector('[data-tju]').textContent = g === 'jour' ? ' : par jour travaillé' : ' : par mois';
     const sel = [...f.querySelectorAll('[name=poles]')].filter(c => c.checked).map(c => c.value);
-    f.querySelectorAll('[data-tpp]').forEach(x => { x.style.opacity = sel.includes(x.dataset.tpp) ? 1 : .6; const md = f.elements['pm_' + x.dataset.tpp].value || defMode(); f.querySelector(`[data-u="${x.dataset.tpp}"]`).textContent = md === 'tache' ? '€ / tâche' : '€ / h'; }); };
+    const did = new Set(A.tasks.filter(t => m && t.who === m.id).map(t => t.pole));
+    f.querySelectorAll('[data-tpp]').forEach(x => { const id = x.dataset.tpp, mine = sel.includes(id); x.hidden = !mine && !did.has(id); x.style.opacity = 1; const nt = x.querySelector('.ntp'); if (nt) nt.hidden = mine; const md = f.elements['pm_' + x.dataset.tpp].value || defMode(); f.querySelector(`[data-u="${x.dataset.tpp}"]`).textContent = md === 'tache' ? '€ / tâche' : '€ / h'; }); };
   if (pg) { pg.onchange = syncPay; f.querySelectorAll('[name=poles],[name^=pm_]').forEach(c => c.addEventListener('change', syncPay)); syncPay(); }
   const rs = f.querySelector('[name=role]'); if (rs) rs.onchange = () => { const d = f.querySelector('[data-perms]'); if (d) d.hidden = rs.value !== 'gerant'; };
   f.onsubmit = async e => { e.preventDefault(); const fd = new FormData(f);
@@ -1700,10 +1701,29 @@ function hoursRows(M){
 function vHours(){
   const M = monthOf(A.hmo || 0), rows = hoursRows(M), tot = rows.reduce((a, r) => a + r.mn, 0), totp = rows.reduce((a, r) => a + r.pay, 0);
   const lab = M.label.charAt(0).toUpperCase() + M.label.slice(1);
-  return `<header class="head"><div><h1>Heures et paie</h1><p class="sub">Calculé à partir des tâches faites : temps pointé (Commencer, puis Valider) ou, sinon, durée prévue.</p></div><div class="actions">${ON('export') ? '<button type="button" class="btn" data-a="hcsv">Exporter (CSV)</button>' : ''}</div></header>
+  return `<header class="head"><div><h1>Heures et paie</h1><p class="sub">Calculé à partir des tâches faites : temps pointé (Commencer, puis Valider) ou, sinon, durée prévue.</p></div><div class="actions"><button type="button" class="btn primary" data-a="payadd">Ajouter un oubli</button>${ON('export') ? '<button type="button" class="btn" data-a="hcsv">Exporter (CSV)</button>' : ''}</div></header>
     <section class="panel" style="overflow-x:auto"><div class="phead"><div class="weeknav"><button type="button" class="btn small" data-a="hmo" data-v="-1" aria-label="Mois précédent">‹</button><h2 style="margin:0;min-width:150px;text-align:center">${esc(lab)}</h2><button type="button" class="btn small" data-a="hmo" data-v="1" aria-label="Mois suivant"${(A.hmo || 0) >= 0 ? ' disabled' : ''}>›</button></div></div>
     ${rows.length ? `<table><thead><tr><th>Personne</th><th>Tâches faites</th><th>Dont pointées</th><th>Heures</th>${ON('paie') ? '<th>Rémunération</th><th class="num">Montant</th>' : ''}</tr></thead><tbody>${rows.map(r => `<tr><td><b>${esc(r.m.name)}</b></td><td>${r.n}</td><td>${r.pt}</td><td>${hhmm(r.mn)}</td>${ON('paie') ? `<td>${r.rate === -1 ? (r.missing ? '<button type="button" class="link" data-a="pedit" data-v="' + r.m.id + '">Taux manquant : ' + esc(r.missing) + '</button>' : '<span class="hint">Selon le pôle</span>') : r.rate ? euro(r.rate) + ' <span class="hint">' + ({ heure_pointage:'/ h pointée', heure_prevue:'/ h prévue', jour:'/ jour (' + r.days + ' j)', tache:'/ tâche', fixe:'/ mois' })[r.mode] + '</span>' : '<button type="button" class="link" data-a="pedit" data-v="' + r.m.id + '">Indiquer</button>'}</td><td class="num">${r.pay ? euro(r.pay) : '—'}</td>` : ''}</tr>`).join('')}<tr><td><b>Total</b></td><td></td><td></td><td><b>${hhmm(tot)}</b></td>${ON('paie') ? `<td></td><td class="num"><b>${euro(totp)}</b></td>` : ''}</tr></tbody></table>` : '<p class="hint">Aucune tâche faite ce mois-ci.</p>'}
     <p class="hint" style="margin:12px 0 0">Estimation indicative, à vérifier avant tout bulletin de paie.</p></section>`;
+}
+function payAdd(){
+  const t = todayISO(), M = monthOf(A.hmo || 0), def = M.key === t.slice(0, 7) ? t : M.key + '-01';
+  const l = modal(`<h2>Ajouter un travail oublié</h2><p style="margin:0;color:var(--muted)">Une tâche faite mais pas saisie (un ménage, un petit-déjeuner…). Elle compte dans les heures et la paie, comme les autres.</p>
+    <form id="paf" class="fgrid">
+      <label class="field">Qui<select name="who" required>${A.team.map(m => `<option value="${m.id}">${esc(m.name)}</option>`).join('')}</select></label>
+      <label class="field">Pôle<select name="pole">${A.poles.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></label>
+      <label class="field">Jour<input type="date" name="day" value="${def}" max="${t}" required></label>
+      <label class="field">Heure de début<input type="time" name="at" value="09:00" required></label>
+      <label class="field">Durée (minutes)<input type="number" name="dur" min="5" max="900" step="5" value="60" required></label>
+      <label class="field">Combien de fois<input type="number" name="n" min="1" max="31" value="1"><span class="hint">Par exemple 3 petits-déjeuners oubliés.</span></label>
+      <label class="field full">Description, facultative<input name="title" placeholder="Par exemple : petit-déjeuner Famille Martin"></label>
+      <p class="err full" id="paerr"></p>
+      <div class="foot full"><button type="button" class="btn" data-close>Annuler</button><button type="submit" class="btn primary">Ajouter</button></div></form>`);
+  l.querySelector('#paf').onsubmit = async e => { e.preventDefault(); const d = Object.fromEntries(new FormData(e.target)), st = toH(d.at), du = Math.max(5, +d.dur || 60) / 60, n = Math.max(1, Math.min(31, +d.n || 1));
+    if (d.day > t) { $('#paerr').textContent = 'Le jour ne peut pas être dans le futur.'; return; }
+    const t0 = parse(d.day).getTime() + st * 36e5;
+    try { const b = writeBatch(db); for (let k = 0; k < n; k++) b.set(doc(collection(db, 'etablissements', A.eid, 'taches')), { manual:true, resaId:'', pole:d.pole, who:d.who, day:d.day, start:st, end:st + du, title:(d.title || '').trim() || poleOf(d.pole).name + ' (ajouté après coup)', detail:'Ajouté par la gérance', extra:[], siteId:'', room:'', note:'', status:'done', checks:[], startedAt:new Date(t0), endedAt:new Date(t0 + du * 36e5), createdAt:serverTimestamp() });
+      await b.commit(); closeModal(); toast(n > 1 ? n + ' tâches ajoutées.' : 'Tâche ajoutée.'); } catch (x) { $('#paerr').textContent = msg(x); } };
 }
 function hoursCSV(){
   const M = monthOf(A.hmo || 0), rows = hoursRows(M), q = v => '"' + String(v).replace(/"/g, '""') + '"';
@@ -1936,6 +1956,7 @@ document.addEventListener('click', e => {
   else if (a === 'lclear') { const b = writeBatch(db); A.liste.filter(x => x.done).forEach(x => b.delete(doc(db, 'etablissements', A.eid, 'liste', x.id))); b.commit().then(() => toast('Liste nettoyée.')).catch(x => toast(msg(x))); }
   else if (a === 'hmo') { A.hmo = Math.min(0, (A.hmo || 0) + (+v)); draw(); }
   else if (a === 'hcsv') hoursCSV();
+  else if (a === 'payadd') payAdd();
   else if (a === 'trepeat') repeatWeek();
   else if (a === 'stab') { A.stab = v; draw(); }
   else if (a === 'poledit') poleEdit(v);
